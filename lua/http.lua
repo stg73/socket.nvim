@@ -121,7 +121,7 @@ function M.wrap(handler)
         if type(http_y) == "string" then
             http_y = {
                 header = {
-                    ["content-type"] = "text/plain",
+                    ["content-type"] = "text/plain; charset=UTF-8",
                 },
                 body = http_y,
             }
