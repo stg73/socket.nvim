@@ -88,10 +88,10 @@ function M.build_frame(f)
         len_bytes = base.to(math.pow(2,8))(f.payload_length)
         if #len_bytes <= 2 then
             f.payload_length = 126
-            len_bytes = base.align_digits(2)(len_bytes)
+            len_bytes = base.align(2)(len_bytes)
         else
             f.payload_length = 127
-            len_bytes = base.align_digits(8)(len_bytes)
+            len_bytes = base.align(8)(len_bytes)
         end
     end
     byte2 = bit.bor(byte2,f.payload_length)
