@@ -72,4 +72,35 @@ function M.client(host,port)
     return o
 end
 
+function M.can_connect(host,port)
+    local client = vim.uv.new_tcp()
+    local connected
+    client:connect(host,port,function(err)
+        if err then
+            connected = false
+        else
+            connected = true
+        end
+        client:close()
+    end)
+
+    local function wait_for_result()
+        if connected == nil then
+            vim.wait(1)
+            wait_for_result()
+        end
+    end
+    wait_for_result()
+
+    return connected
+end
+
+local tbl = require("tbl")
+
+function M.get_available_port()
+    return tbl.match(function(port)
+        return not M.can_connect("127.0.0.1",port)
+    end)(tbl.range(1024)(49151))
+end
+
 return M
