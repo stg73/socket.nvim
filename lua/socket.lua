@@ -30,7 +30,6 @@ function M.server(host,port)
                 o.on.data(chunk)
             else
                 sock:close()
-                print("sock:close()") -- 仮
             end
         end)
     end)
