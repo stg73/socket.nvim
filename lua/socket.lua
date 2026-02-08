@@ -85,7 +85,7 @@ function M.can_connect(host,port)
 
     local function wait_for_result()
         if connected == nil then
-            vim.wait(1)
+            vim.wait(0)
             wait_for_result()
         end
     end
