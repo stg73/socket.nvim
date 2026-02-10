@@ -17,6 +17,14 @@ f は以下を含むテーブル
     payload_data
 ]]
 
+function M.unmask(masked_data,key)
+    local unmasked_data = {}
+    for i,val in pairs(masked_data) do
+        unmasked_data[i] = bit.bxor(val,key[((i - 1) % 4) + 1])
+    end
+    return unmasked_data
+end
+
 -- 参考にした記事: https://zenn.dev/fukurose/articles/79a0dac7d19091
 function M.parse_frame(binary)
     -- 状態を持つ関数 これを使って頭から順番にバイトを読み取っていく
@@ -53,15 +61,7 @@ function M.parse_frame(binary)
         f.masking_key = take_bytes(4) 
     end
 
-    f._payload_data = take_bytes(f.payload_length)
-    if f.mask == 0 then
-        f.payload_data = f._payload_data
-    else
-        f.payload_data = {}
-        for i,val in pairs(f._payload_data) do
-            f.payload_data[i] = bit.bxor(val,f.masking_key[((i - 1) % 4) + 1])
-        end
-    end
+    f.payload_data = take_bytes(f.payload_length)
 
     return f
 end
@@ -141,7 +141,13 @@ function M.wrap(handler)
         local data_x
         if frame then
             local parsed = M.parse_frame(frame)
-            data_x = table.concat(tbl.map(string.char)(parsed.payload_data))
+            local payload_data
+            if parsed.mask == 0 then
+                payload_data = parsed.payload_data
+            else
+                payload_data = M.unmask(parsed.payload_data,parsed.masking_key)
+            end
+            data_x = table.concat(tbl.map(string.char)(payload_data))
         end
         local data_y = handler(data_x)
         if data_y then
