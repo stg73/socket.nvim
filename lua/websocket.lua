@@ -25,10 +25,21 @@ function M.unmask(masked_data,key)
     return unmasked_data
 end
 
+-- string.byte(str,1,-1) の代わり
+-- string.byte() を使うと、str がある長さを超えるとエラーになる
+-- 参考にしたもの: https://qiita.com/toritori0318/items/dd0990c5521998155a00
+local function string_byte(str)
+    local t = {}
+    for i = 1, string.len(str) do
+        t[i] = string.byte(str,i)
+    end
+    return t
+end
+
 -- 参考にした記事: https://zenn.dev/fukurose/articles/79a0dac7d19091
 function M.parse_frame(binary)
     -- 状態を持つ関数 これを使って頭から順番にバイトを読み取っていく
-    local frame = { string.byte(binary,1,-1) }
+    local frame = string_byte(binary)
     local current_head = 1
     local function take_bytes(n)
         local t = vim.list_slice(frame,current_head,current_head + n - 1)
@@ -159,7 +170,7 @@ function M.wrap(handler)
                 opcode = 1,
                 mask = 0,
                 payload_length = string.len(data_y),
-                payload_data = { string.byte(data_y,1,-1) },
+                payload_data = string_byte(data_y),
             })
         else
             return nil
