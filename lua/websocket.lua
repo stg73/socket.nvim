@@ -59,7 +59,7 @@ function M.parse_frame(binary)
     local byte2 = take_bytes(1)[1]
     f.mask = bit.rshift(bit.band(byte2,0x80),7)
     f._payload_length = bit.band(byte2,0x7f)
-    local join_bytes = base.from(math.pow(2,8))
+    local join_bytes = base.from(2 ^ 8)
     if f._payload_length == 126 then
         f.payload_length = join_bytes(take_bytes(2))
     elseif f._payload_length == 127 then
@@ -96,7 +96,7 @@ function M.build_frame(f)
     byte2 = bit.bor(byte2,bit.lshift(f.mask,7))
     local len_bytes = {} -- payload_length を表すバイト列
     if f.payload_length >= 126 then
-        len_bytes = base.to(math.pow(2,8))(f.payload_length)
+        len_bytes = base.to(2 ^ 8)(f.payload_length)
         if #len_bytes <= 2 then
             f.payload_length = 126
             len_bytes = base.align(2)(len_bytes)
