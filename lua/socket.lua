@@ -97,9 +97,9 @@ end
 local tbl = require("tbl")
 
 function M.get_available_port()
-    return tbl.match(function(port)
+    return tbl.find(function(port)
         return not M.can_connect("127.0.0.1",port)
-    end)(tbl.range(1024)(49151))
+    end)(tbl.range({ 1024, 49151 }))
 end
 
 return M
