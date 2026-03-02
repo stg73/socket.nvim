@@ -75,7 +75,7 @@ function M.build(tbl)
     for key,value in pairs(tbl.header) do
         table.insert(header,key .. ": " .. value)
     end
-    local status_line = table.concat(vim.iter({ tbl.method, tbl.path, "HTTP/" .. tbl.version,tbl.status,M.status_codes[tbl.status] }):totable()," ") -- 歯抜けを修正するため vim.iter を使う
+    local status_line = table.concat(vim.tbl_values({ tbl.method, tbl.path, "HTTP/" .. tbl.version,tbl.status,M.status_codes[tbl.status] })," ") -- 歯抜けをなくすため tbl_values を使う
     local http_x = table.concat({ status_line, table.concat(header,"\r\n"), "", tbl.body }, "\r\n")
 
     return http_x
