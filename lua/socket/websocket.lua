@@ -9,6 +9,9 @@ function M.server(o)
                 return data
             end)())
         end,
+        close = function()
+            o.close()
+        end,
         on = {
             data = function() end,
             open = function() end,
