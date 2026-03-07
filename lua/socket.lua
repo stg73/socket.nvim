@@ -72,8 +72,8 @@ function M.client(host,port)
 end
 
 function M.can_connect(host,port)
-    local client = vim.uv.new_tcp()
     local connected
+    local client = vim.uv.new_tcp()
     client:connect(host,port,function(err)
         if err then
             connected = false
@@ -82,15 +82,9 @@ function M.can_connect(host,port)
         end
         client:close()
     end)
-
-    local function wait_for_result()
-        if connected == nil then
-            vim.wait(0)
-            wait_for_result()
-        end
-    end
-    wait_for_result()
-
+    vim.wait(10,function() -- time は適当
+        return connected ~= nil
+    end)
     return connected
 end
 
