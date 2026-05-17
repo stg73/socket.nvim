@@ -11,6 +11,7 @@ function M.server(host,port)
         on = {
             data = function() end, -- データが送られてきたときにデータを引数として呼び出される
             open = function() end, -- 接続したときに呼び出される
+            error = function() end, -- エラー時にエラーメッセージを引数として呼び出される
         },
     }
 
@@ -25,7 +26,9 @@ function M.server(host,port)
         o.send = function(data,callback) sock:write(data,callback) end
         o.close = function() sock:close() end
         sock:read_start(function(err, chunk)
-            assert(not err,err)
+            if err then
+                o.on.error(err)
+            end
             if chunk then
                 o.on.data(chunk)
             else
@@ -47,6 +50,7 @@ function M.client(host,port)
         on = {
             data = function() end,
             open = function() end,
+            error = function() end,
         }
     }
 
@@ -56,7 +60,9 @@ function M.client(host,port)
         o.send = function(data,callback)
             client:write(data,callback)
             client:read_start(function(err, chunk)
-                assert(not err,err)
+                if err then
+                    o.on.error(err)
+                end
                 o.close = function() client:close() end
                 if chunk then
                     o.on.data(chunk)
